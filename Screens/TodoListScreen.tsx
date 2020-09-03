@@ -12,15 +12,25 @@ export const TodoListScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [todoName, setTodoName] = useState<string>();
+  const [isCloseTodoModalOpen, setIsCloseTodoModalOpen] = useState<boolean>(
+    false
+  );
+  const [closeTodoName, setCloseTodoName] = useState<string>();
+  const [todoId, setTodoId] = useState<string>();
+
   const locationId = route.params.locationId;
 
   useEffect(() => {
+    getTodoList();
+  }, []);
+
+  const getTodoList = () => {
     fetch(SERVER_URL + 'todo/getByLocation/' + locationId)
       .then((res) => res.json())
       .then((data) => {
         setTodoList(data.data.todos);
       });
-  }, []);
+  };
 
   const renderTodoList = () => {
     if (todoList.length === 0) {
@@ -28,8 +38,16 @@ export const TodoListScreen = () => {
     }
     return todoList.map((todo) => {
       return (
-        <TodoRow key={todo._id} status={todo.status}>
+        <TodoRow
+          key={todo._id}
+          status={todo.status}
+          onPress={() => {
+            setTodoId(todo._id);
+            setIsCloseTodoModalOpen(true);
+          }}
+        >
           <NameText>{todo.name}</NameText>
+          {todo.doneBy ? <Text>{todo.doneBy}</Text> : null}
           <StatusText>{todo.status}</StatusText>
         </TodoRow>
       );
@@ -54,6 +72,24 @@ export const TodoListScreen = () => {
     setTodoName('');
   };
 
+  const closeTodo = async (id) => {
+    const response = await fetch(SERVER_URL + 'todo/close', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ todoId: id, doneBy: closeTodoName }),
+    });
+    const closed = await response.json();
+    if (closed.success === true) {
+      getTodoList();
+      setIsCloseTodoModalOpen(false);
+    }
+
+    // TODO - cover fail response
+  };
+
   return (
     <>
       <ScreenWrapper>
@@ -73,6 +109,26 @@ export const TodoListScreen = () => {
               style={{ width: 250, marginTop: 20 }}
             />
             <Button mode="contained" onPress={() => saveTodo()}>
+              {isLoading ? <ActivityIndicator /> : <Text>Save Todo</Text>}
+            </Button>
+          </ModalView>
+        </ModalBody>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isCloseTodoModalOpen}
+      >
+        <ModalBody>
+          <ModalView>
+            <Text>Who is closing this</Text>
+            <TextInput
+              label="Todo"
+              value={closeTodoName}
+              onChangeText={(value: string) => setCloseTodoName(value)}
+              style={{ width: 250, marginTop: 20 }}
+            />
+            <Button mode="contained" onPress={() => closeTodo(todoId)}>
               {isLoading ? <ActivityIndicator /> : <Text>Save Todo</Text>}
             </Button>
           </ModalView>
@@ -103,7 +159,7 @@ const ModalView = styled.View`
   width: 350px;
 `;
 
-const TodoRow = styled.View`
+const TodoRow = styled.TouchableOpacity`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
