@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { Button, TextInput } from 'react-native-paper';
-import { View, Text, Modal, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { SERVER_URL } from '../constants';
 
 export const HomeScreen = () => {
+  const navigation = useNavigation();
   const [locationList, setLocationList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [locationName, setLocationName] = useState<string>();
@@ -35,6 +43,8 @@ export const HomeScreen = () => {
     setLocationList(locationArray);
     setIsLoading(false);
     setIsModalVisible(false);
+    setLocationName('');
+    setAddress('');
   };
 
   return (
@@ -43,10 +53,15 @@ export const HomeScreen = () => {
         <View>
           {locationList.map((location) => {
             return (
-              <View key={location._id}>
+              <TouchableOpacity
+                key={location._id}
+                onPress={() =>
+                  navigation.push('Todos', { locationId: location._id })
+                }
+              >
                 <Text>{location.name}</Text>
                 <Text>{location.address}</Text>
-              </View>
+              </TouchableOpacity>
             );
           })}
         </View>
