@@ -1,0 +1,103 @@
+import * as React from 'react';
+import { Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import AuthContext from '../Context/AuthContext';
+
+import AuthStackScreen from './AuthStackNavigator';
+import AppStackScreen from './AppStackNavigator';
+
+export const Navigation = () => {
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const [state, dispatch] = React.useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case 'RESTORE_TOKEN':
+          return {
+            ...prevState,
+            userToken: action.token,
+            isLoading: false,
+          };
+        case 'SIGN_IN':
+          return {
+            ...prevState,
+            isSignout: false,
+            userToken: action.token,
+          };
+        case 'SIGN_OUT':
+          return {
+            ...prevState,
+            isSignout: true,
+            userToken: null,
+          };
+      }
+    },
+    {
+      isLoading: true,
+      isSignout: false,
+      userToken: null,
+    }
+  );
+
+  React.useEffect(() => {
+    const bootstrapAsync = async () => {
+      let token;
+      try {
+        token = await AsyncStorage.getItem('accessToken');
+      } catch (err) {
+        return setIsLoading(false);
+      }
+      dispatch({ type: 'RESTORE_TOKEN', token });
+    };
+
+    bootstrapAsync();
+  }, []);
+
+  const authContext = React.useMemo(
+    () => ({
+      signIn: async (data) => {
+        // In a production app, we need to send some data (usually username, password) to server and get a token
+        // We will also need to handle errors if sign in failed
+        // After getting token, we need to persist the token using `AsyncStorage`
+        // In the example, we'll use a dummy token
+        // fetch('http://localhost:300/api/user/')
+
+        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+      },
+      signOut: () => dispatch({ type: 'SIGN_OUT' }),
+      signUp: async (data) => {
+        // In a production app, we need to send user data to server and get a token
+        // We will also need to handle errors if sign up failed
+        // After getting token, we need to persist the token using `AsyncStorage`
+        // In the example, we'll use a dummy token
+        const res = await fetch('http://localhost:3000/api/user/signup', {
+          method: 'post',
+          body: JSON.stringify(data),
+          headers: { 'Content-type': 'application/json; charset=UTF-8' },
+        });
+        const user = await res.json();
+        // TODO - Need to work out how I am going to handle user data
+        // I think context
+        AsyncStorage.setItem('accessToken', user.data.token);
+        dispatch({ type: 'SIGN_IN', token: user.data.token });
+      },
+    }),
+    []
+  );
+
+  const navigationOptions = () => {
+    if (isLoading) return <Text>Loading</Text>;
+
+    return !state.userToken ? <AuthStackScreen /> : <AppStackScreen />;
+  };
+
+  return (
+    <AuthContext.Provider value={authContext}>
+      <NavigationContainer>{navigationOptions()}</NavigationContainer>
+    </AuthContext.Provider>
+  );
+};
+
+export default Navigation;

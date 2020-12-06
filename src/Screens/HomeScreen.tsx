@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { SERVER_URL } from '../constants';
+import { SERVER_URL } from '../../constants';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
@@ -70,28 +70,28 @@ export const HomeScreen = () => {
           })}
         </LocationView>
         <FooterWrapper>
-          <Button mode="contained" onPress={() => setIsModalVisible(true)}>
+          <Button mode='contained' onPress={() => setIsModalVisible(true)}>
             Add new location
           </Button>
         </FooterWrapper>
       </HomeScreenWrapper>
-      <Modal animationType="slide" transparent={true} visible={isModalVisible}>
+      <Modal animationType='slide' transparent={true} visible={isModalVisible}>
         <ModalBody>
           <ModalView>
             <Text>Add a new location</Text>
             <TextInput
-              label="Location name"
+              label='Location name'
               onChangeText={(value: string) => setLocationName(value)}
               value={locationName}
               style={{ width: 250, marginTop: 20 }}
             />
             <TextInput
-              label="Address"
+              label='Address'
               onChangeText={(value: string) => setAddress(value)}
               value={address}
               style={{ width: 250, marginTop: 20, marginBottom: 20 }}
             />
-            <Button mode="contained" onPress={() => saveLocation()}>
+            <Button mode='contained' onPress={() => saveLocation()}>
               {isLoading ? <ActivityIndicator /> : <Text>Save location</Text>}
             </Button>
           </ModalView>

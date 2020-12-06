@@ -4,7 +4,7 @@ import { Text, View, Modal, ActivityIndicator } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { TextInput, Button } from 'react-native-paper';
 
-import { SERVER_URL } from '../constants';
+import { SERVER_URL } from '../../constants';
 import { ScrollView } from 'react-native-gesture-handler';
 
 export const TodoListScreen = () => {
@@ -104,28 +104,28 @@ export const TodoListScreen = () => {
     <>
       <ScreenWrapper>
         {renderTodoList()}
-        <Button mode="contained" onPress={() => setIsModalVisible(true)}>
+        <Button mode='contained' onPress={() => setIsModalVisible(true)}>
           Add
         </Button>
       </ScreenWrapper>
-      <Modal animationType="slide" transparent={true} visible={isModalVisible}>
+      <Modal animationType='slide' transparent={true} visible={isModalVisible}>
         <ModalBody>
           <ModalView>
             <Text>Add a new Todo</Text>
             <TextInput
-              label="Todo"
+              label='Todo'
               value={todoName}
               onChangeText={(value: string) => setTodoName(value)}
               style={{ width: 250, marginTop: 20 }}
             />
-            <Button mode="contained" onPress={() => saveTodo()}>
+            <Button mode='contained' onPress={() => saveTodo()}>
               {isLoading ? <ActivityIndicator /> : <Text>Save Todo</Text>}
             </Button>
           </ModalView>
         </ModalBody>
       </Modal>
       <Modal
-        animationType="slide"
+        animationType='slide'
         transparent={true}
         visible={isCloseTodoModalOpen}
       >
@@ -133,12 +133,12 @@ export const TodoListScreen = () => {
           <ModalView>
             <Text>Who is closing this</Text>
             <TextInput
-              label="Staff member"
+              label='Staff member'
               value={closeTodoName}
               onChangeText={(value: string) => setCloseTodoName(value)}
               style={{ width: 250, marginTop: 20 }}
             />
-            <Button mode="contained" onPress={() => closeTodo(todoId)}>
+            <Button mode='contained' onPress={() => closeTodo(todoId)}>
               {isLoading ? <ActivityIndicator /> : <Text>Done</Text>}
             </Button>
           </ModalView>
