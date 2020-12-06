@@ -5,6 +5,7 @@ import { useRoute } from '@react-navigation/native';
 import { TextInput, Button } from 'react-native-paper';
 
 import { SERVER_URL } from '../constants';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export const TodoListScreen = () => {
   const route = useRoute();
@@ -46,9 +47,18 @@ export const TodoListScreen = () => {
             setIsCloseTodoModalOpen(true);
           }}
         >
-          <NameText>{todo.name}</NameText>
-          {todo.doneBy ? <Text>{todo.doneBy}</Text> : null}
-          <StatusText>{todo.status}</StatusText>
+          <TopRow>
+            <NameText>{todo.name}</NameText>
+            {todo.doneBy ? <Text>{todo.doneBy}</Text> : null}
+            <StatusText>{todo.status}</StatusText>
+          </TopRow>
+          <ScrollView>
+            <Text>
+              This is a description that will go for lots of lines and be really
+              descriptive so ev eryone knows what the description is telling
+              people what to do
+            </Text>
+          </ScrollView>
         </TodoRow>
       );
     });
@@ -95,7 +105,7 @@ export const TodoListScreen = () => {
       <ScreenWrapper>
         {renderTodoList()}
         <Button mode="contained" onPress={() => setIsModalVisible(true)}>
-          Add a Todo
+          Add
         </Button>
       </ScreenWrapper>
       <Modal animationType="slide" transparent={true} visible={isModalVisible}>
@@ -123,13 +133,13 @@ export const TodoListScreen = () => {
           <ModalView>
             <Text>Who is closing this</Text>
             <TextInput
-              label="Todo"
+              label="Staff member"
               value={closeTodoName}
               onChangeText={(value: string) => setCloseTodoName(value)}
               style={{ width: 250, marginTop: 20 }}
             />
             <Button mode="contained" onPress={() => closeTodo(todoId)}>
-              {isLoading ? <ActivityIndicator /> : <Text>Save Todo</Text>}
+              {isLoading ? <ActivityIndicator /> : <Text>Done</Text>}
             </Button>
           </ModalView>
         </ModalBody>
@@ -160,16 +170,22 @@ const ModalView = styled.View`
 `;
 
 const TodoRow = styled.TouchableOpacity`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  height: 30px;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  /* align-items: center; */
+  height: 100px;
   ${(props: any) =>
     css`
-      background-color: ${props.status === 'todo' ? 'red' : 'green'};
+      background-color: ${props.status === 'todo' ? 'white' : 'green'};
     `}
 `;
 
 const NameText = styled.Text``;
 
 const StatusText = styled.Text``;
+
+const TopRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;

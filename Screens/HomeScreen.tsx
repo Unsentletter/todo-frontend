@@ -7,6 +7,7 @@ import {
   Modal,
   ActivityIndicator,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -50,21 +51,24 @@ export const HomeScreen = () => {
   return (
     <>
       <HomeScreenWrapper>
-        <View>
+        <LocationView>
           {locationList.map((location) => {
             return (
-              <TouchableOpacity
+              <LocationContainer
                 key={location._id}
                 onPress={() =>
                   navigation.push('Todos', { locationId: location._id })
                 }
               >
-                <Text>{location.name}</Text>
+                <TopLineView>
+                  <NameText>{location.name}</NameText>
+                  <Text>North</Text>
+                </TopLineView>
                 <Text>{location.address}</Text>
-              </TouchableOpacity>
+              </LocationContainer>
             );
           })}
-        </View>
+        </LocationView>
         <FooterWrapper>
           <Button mode="contained" onPress={() => setIsModalVisible(true)}>
             Add new location
@@ -109,6 +113,13 @@ const FooterWrapper = styled.View`
   margin-bottom: 40px;
 `;
 
+const LocationView = styled.ScrollView`
+  height: 615px;
+`;
+const LocationContainer = styled.TouchableOpacity`
+  margin-top: 10px;
+`;
+
 const ModalBody = styled.View`
   flex: 1;
   justify-content: center;
@@ -124,4 +135,14 @@ const ModalView = styled.View`
   align-items: center;
   height: 300px;
   width: 350px;
+`;
+
+const NameText = styled.Text`
+  font-size: 18px;
+  font-weight: 600;
+`;
+
+const TopLineView = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
 `;
