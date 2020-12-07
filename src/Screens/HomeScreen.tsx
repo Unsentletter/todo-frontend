@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuthContext } from '../Context/AuthContext';
 
 import { SERVER_URL } from '../../constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
@@ -39,6 +40,7 @@ export const HomeScreen = () => {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Authorization: await AsyncStorage.getItem('accessToken'),
       },
       body: JSON.stringify({ name: locationName, address }),
     });
@@ -60,7 +62,7 @@ export const HomeScreen = () => {
               <LocationContainer
                 key={location._id}
                 onPress={() =>
-                  navigation.push('Todos', { locationId: location._id })
+                  navigation.navigate('Todos', { locationId: location._id })
                 }
               >
                 <TopLineView>
