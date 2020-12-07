@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+
 import { useAuthContext } from '../../Context/AuthContext';
 
-export const SignUpScreen = () => {
+export const SignInScreen = () => {
   const authContext = useAuthContext();
   const navigation = useNavigation();
   const [email, setEmail] = React.useState<string>();
@@ -41,17 +42,12 @@ export const SignUpScreen = () => {
         onChangeText={(text) => onChange(text, 'password')}
         secureTextEntry
       />
-      <TextInput
-        label='Name'
-        value={name}
-        onChangeText={(text) => onChange(text, 'name')}
-      />
       <Button mode={'contained'} onPress={signup}>
         SUBMIT
       </Button>
-      <Button onPress={() => navigation.navigate('Sign In')}>Sign in</Button>
+      <Button onPress={() => navigation.navigate('Sign Up')}>Sign Up</Button>
     </View>
   );
 };
 
-export default SignUpScreen;
+export default SignInScreen;
