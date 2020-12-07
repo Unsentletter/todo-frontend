@@ -11,10 +11,13 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import { useAuthContext } from '../Context/AuthContext';
+
 import { SERVER_URL } from '../../constants';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
+  const authContext = useAuthContext();
   const [locationList, setLocationList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [locationName, setLocationName] = useState<string>();
@@ -73,6 +76,7 @@ export const HomeScreen = () => {
           <Button mode='contained' onPress={() => setIsModalVisible(true)}>
             Add new location
           </Button>
+          <Button onPress={() => authContext.signOut()}>Sign out</Button>
         </FooterWrapper>
       </HomeScreenWrapper>
       <Modal animationType='slide' transparent={true} visible={isModalVisible}>
