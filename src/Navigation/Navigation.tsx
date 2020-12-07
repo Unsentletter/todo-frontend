@@ -64,10 +64,20 @@ export const Navigation = () => {
         // In the example, we'll use a dummy token
         // fetch('http://localhost:300/api/user/')
 
-        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+        const res = await fetch('http://localhost:3000/api/user/signin', {
+          method: 'post',
+          body: JSON.stringify(data),
+          headers: { 'Content-type': 'application/json; charset=UTF-8' },
+        });
+        const user = await res.json();
+        // TODO - Need to work out how I am going to handle user data
+        // I think context
+        await AsyncStorage.setItem('accessToken', user.data.token);
+
+        dispatch({ type: 'SIGN_IN', token: user.data.token });
       },
-      signOut: () => {
-        AsyncStorage.removeItem('accessToken');
+      signOut: async () => {
+        await AsyncStorage.removeItem('accessToken');
         dispatch({ type: 'SIGN_OUT' });
       },
       signUp: async (data) => {
@@ -83,7 +93,7 @@ export const Navigation = () => {
         const user = await res.json();
         // TODO - Need to work out how I am going to handle user data
         // I think context
-        AsyncStorage.setItem('accessToken', user.data.token);
+        await AsyncStorage.setItem('accessToken', user.data.token);
         dispatch({ type: 'SIGN_IN', token: user.data.token });
       },
     }),

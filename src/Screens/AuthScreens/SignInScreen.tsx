@@ -10,7 +10,6 @@ export const SignInScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = React.useState<string>();
   const [password, setPassword] = React.useState<string>();
-  const [name, setName] = React.useState<string>();
 
   const onChange = (text: string, input: string) => {
     if (input === 'email') {
@@ -19,13 +18,10 @@ export const SignInScreen = () => {
     if (input === 'password') {
       setPassword(text);
     }
-    if (input === 'name') {
-      setName(text);
-    }
   };
 
-  const signup = () => {
-    authContext.signUp({ email, password, name });
+  const signin = () => {
+    authContext.signIn({ email, password });
   };
 
   return (
@@ -42,7 +38,7 @@ export const SignInScreen = () => {
         onChangeText={(text) => onChange(text, 'password')}
         secureTextEntry
       />
-      <Button mode={'contained'} onPress={signup}>
+      <Button mode={'contained'} onPress={signin}>
         SUBMIT
       </Button>
       <Button onPress={() => navigation.navigate('Sign Up')}>Sign Up</Button>
