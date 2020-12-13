@@ -10,11 +10,11 @@ import {
   ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import API from '../API/api';
 
 import { useAuthContext } from '../Context/AuthContext';
 
 import { SERVER_URL } from '../../constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
@@ -35,17 +35,12 @@ export const HomeScreen = () => {
 
   const saveLocation = async () => {
     setIsLoading(true);
-    const response = await fetch(SERVER_URL + 'location/create', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: await AsyncStorage.getItem('accessToken'),
-      },
-      body: JSON.stringify({ name: locationName, address }),
+    const res = await API('post', 'location/create', {
+      name: locationName,
+      address,
     });
-    const newLocation = await response.json();
-    const locationArray = [...locationList, newLocation.data.location];
+    const newLocation = res.data.data.location;
+    const locationArray = [...locationList, newLocation];
     setLocationList(locationArray);
     setIsLoading(false);
     setIsModalVisible(false);
