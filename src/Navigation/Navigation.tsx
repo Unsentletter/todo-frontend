@@ -59,8 +59,7 @@ export const Navigation = () => {
   const authContext = React.useMemo(
     () => ({
       signIn: async (data) => {
-        const res = API('post', 'user/signin', data);
-        const user = await res;
+        const user = await API('post', 'user/signin', data);
 
         // TODO - Need to work out how I am going to handle user data
         // I think context
@@ -75,8 +74,7 @@ export const Navigation = () => {
         dispatch({ type: 'SIGN_OUT' });
       },
       signUp: async (data) => {
-        const res = API('post', 'user/signup', data);
-        const user = await res;
+        const user = await API('post', 'user/signup', data);
 
         // TODO - Need to work out how I am going to handle user data
         // I think context
