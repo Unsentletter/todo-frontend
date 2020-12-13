@@ -7,6 +7,7 @@ import AuthContext from '../Context/AuthContext';
 
 import AuthStackScreen from './AuthStackNavigator';
 import AppStackScreen from './AppStackNavigator';
+import API from '../API/api';
 
 export const Navigation = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -58,43 +59,31 @@ export const Navigation = () => {
   const authContext = React.useMemo(
     () => ({
       signIn: async (data) => {
-        // In a production app, we need to send some data (usually username, password) to server and get a token
-        // We will also need to handle errors if sign in failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-        // fetch('http://localhost:300/api/user/')
+        const res = API('post', 'user/signin', data);
+        const user = await res;
 
-        const res = await fetch('http://localhost:3000/api/user/signin', {
-          method: 'post',
-          body: JSON.stringify(data),
-          headers: { 'Content-type': 'application/json; charset=UTF-8' },
-        });
-        const user = await res.json();
         // TODO - Need to work out how I am going to handle user data
         // I think context
-        await AsyncStorage.setItem('accessToken', user.data.token);
+        // TODO - How will I handle errors?
 
-        dispatch({ type: 'SIGN_IN', token: user.data.token });
+        await AsyncStorage.setItem('accessToken', user.data.data.token);
+        dispatch({ type: 'SIGN_IN', token: user.data.data.token });
+        return;
       },
       signOut: async () => {
         await AsyncStorage.removeItem('accessToken');
         dispatch({ type: 'SIGN_OUT' });
       },
       signUp: async (data) => {
-        // In a production app, we need to send user data to server and get a token
-        // We will also need to handle errors if sign up failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-        const res = await fetch('http://localhost:3000/api/user/signup', {
-          method: 'post',
-          body: JSON.stringify(data),
-          headers: { 'Content-type': 'application/json; charset=UTF-8' },
-        });
-        const user = await res.json();
+        const res = API('post', 'user/signup', data);
+        const user = await res;
+
         // TODO - Need to work out how I am going to handle user data
         // I think context
-        await AsyncStorage.setItem('accessToken', user.data.token);
-        dispatch({ type: 'SIGN_IN', token: user.data.token });
+        // TODO - How will I handle errors?
+
+        await AsyncStorage.setItem('accessToken', user.data.data.token);
+        dispatch({ type: 'SIGN_IN', token: user.data.data.token });
       },
     }),
     []
