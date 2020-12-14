@@ -1,20 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { Button, TextInput } from 'react-native-paper';
-import {
-  View,
-  Text,
-  Modal,
-  ActivityIndicator,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { Text, Modal, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import API from '../API/api';
 
 import { useAuthContext } from '../Context/AuthContext';
-
-import { SERVER_URL } from '../../constants';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
@@ -24,13 +15,12 @@ export const HomeScreen = () => {
   const [locationName, setLocationName] = useState<string>();
   const [address, setAddress] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [direction, setDirection] = React.useState<Direction>();
 
   useEffect(() => {
-    fetch(SERVER_URL + 'location/get')
-      .then((res) => res.json())
-      .then((data) => {
-        setLocationList(data.data.locationList);
-      });
+    API('get', 'location/get').then((data) =>
+      setLocationList(data.data.data.locationList)
+    );
   }, []);
 
   const saveLocation = async () => {
@@ -48,6 +38,10 @@ export const HomeScreen = () => {
     setAddress('');
   };
 
+  const onButtonPress = (direction: Direction) => {
+    setDirection(direction);
+  };
+
   return (
     <>
       <HomeScreenWrapper>
@@ -57,7 +51,7 @@ export const HomeScreen = () => {
               <LocationContainer
                 key={location._id}
                 onPress={() =>
-                  navigation.navigate('Todos', { locationId: location._id })
+                  navigation.navigate('TodoList', { locationId: location._id })
                 }
               >
                 <TopLineView>
@@ -92,9 +86,43 @@ export const HomeScreen = () => {
               value={address}
               style={{ width: 250, marginTop: 20, marginBottom: 20 }}
             />
-            <Button mode='contained' onPress={() => saveLocation()}>
-              {isLoading ? <ActivityIndicator /> : <Text>Save location</Text>}
-            </Button>
+            <ButtonWrapper>
+              <Button
+                mode={direction !== 'north' ? 'outlined' : 'contained'}
+                onPress={() => {
+                  setDirection('north');
+                }}
+                compact
+              >
+                <Text>North</Text>
+              </Button>
+              <Button
+                mode={direction !== 'south' ? 'outlined' : 'contained'}
+                onPress={() => {
+                  setDirection('south');
+                }}
+                compact
+              >
+                <Text>South</Text>
+              </Button>
+              <Button
+                mode={direction !== 'local' ? 'outlined' : 'contained'}
+                onPress={() => {
+                  setDirection('local');
+                }}
+                compact
+              >
+                <Text>Local</Text>
+              </Button>
+            </ButtonWrapper>
+            <ButtonWrapper>
+              <Button mode='contained' onPress={() => saveLocation()}>
+                {isLoading ? <ActivityIndicator /> : <Text>Save location</Text>}
+              </Button>
+              <Button mode='text' onPress={() => setIsModalVisible(false)}>
+                <Text>Cancel</Text>
+              </Button>
+            </ButtonWrapper>
           </ModalView>
         </ModalBody>
       </Modal>
@@ -103,6 +131,8 @@ export const HomeScreen = () => {
 };
 
 export default HomeScreen;
+
+type Direction = 'north' | 'south' | 'local';
 
 const HomeScreenWrapper = styled.View`
   flex: 1;
@@ -134,7 +164,7 @@ const ModalView = styled.View`
   border-radius: 20px;
   padding: 35px;
   align-items: center;
-  height: 300px;
+  height: 350px;
   width: 350px;
 `;
 
@@ -146,4 +176,11 @@ const NameText = styled.Text`
 const TopLineView = styled.View`
   flex-direction: row;
   justify-content: space-between;
+`;
+
+const ButtonWrapper = styled.View`
+  flex-direction: row;
+  margin-bottom: 15px;
+  justify-content: space-between;
+  width: 250px;
 `;

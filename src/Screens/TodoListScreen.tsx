@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components/native';
-import { Text, View, Modal, ActivityIndicator } from 'react-native';
+import { Text, Modal, ActivityIndicator } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { TextInput, Button } from 'react-native-paper';
 
 import { SERVER_URL } from '../../constants';
 import { ScrollView } from 'react-native-gesture-handler';
+import API from '../API/api';
 
 export const TodoListScreen = () => {
   const route = useRoute();
@@ -25,12 +26,9 @@ export const TodoListScreen = () => {
     getTodoList();
   }, []);
 
-  const getTodoList = () => {
-    fetch(SERVER_URL + 'todo/getByLocation/' + locationId)
-      .then((res) => res.json())
-      .then((data) => {
-        setTodoList(data.data.todos);
-      });
+  const getTodoList = async () => {
+    const todos = await API('get', `todo/getByLocation/${locationId}`);
+    setTodoList(todos.data.data.todos);
   };
 
   const renderTodoList = () => {
@@ -66,16 +64,11 @@ export const TodoListScreen = () => {
 
   const saveTodo = async () => {
     setIsLoading(true);
-    const response = await fetch(SERVER_URL + 'todo/create', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name: todoName, locationId }),
+    const newTodo = await API('post', 'todo/create', {
+      name: todoName,
+      locationId,
     });
-    const newTodo = await response.json();
-    const newArr = [...todoList, newTodo.data.todo];
+    const newArr = [...todoList, newTodo.data.data.todo];
     setTodoList(newArr);
     setIsLoading(false);
     setIsModalVisible(false);
@@ -83,16 +76,11 @@ export const TodoListScreen = () => {
   };
 
   const closeTodo = async (id) => {
-    const response = await fetch(SERVER_URL + 'todo/close', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ todoId: id, doneBy: closeTodoName }),
+    const closed = await API('post', 'todo/close', {
+      todoId: id,
+      doneBy: closeTodoName,
     });
-    const closed = await response.json();
-    if (closed.success === true) {
+    if (closed.data.success === true) {
       getTodoList();
       setIsCloseTodoModalOpen(false);
     }

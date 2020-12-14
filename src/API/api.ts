@@ -1,11 +1,11 @@
 import axios from 'axios';
 import axiosInterceptor from './axiosInterceptor';
 
+import { SERVER_URL } from '../../constants';
+
 axiosInterceptor(axios);
 
-const SERVER_URL = `http://localhost:3000/api/`;
-
-const API = (method: string, endPoint: string, params: any) => {
+const API = (method: string, endPoint: string, params?: any) => {
   const url = SERVER_URL + endPoint;
 
   switch (method) {
